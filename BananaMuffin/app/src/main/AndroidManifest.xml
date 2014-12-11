@@ -1,7 +1,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.ldc.bananamuffin">
 
+    <!-- Ask permission to receive events when boot is completed -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
     <application android:allowBackup="true" android:label="@string/app_name"
-        android:icon="@drawable/ic_launcher" android:theme="@style/AppTheme">
+        android:icon="@drawable/muffin" android:theme="@style/AppTheme">
+
+        <!-- Defines class that receives boot completed events -->
+        <receiver android:name=".BootReceiver" android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Defines service -->
+        <service android:name=".BreakfastNotifier" android:exported="false" />
 
     </application>
 
