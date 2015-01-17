@@ -13,19 +13,32 @@ public class BreakfastNotifier extends IntentService {
     public final static String NAME = BreakfastNotifier.class.getSimpleName();
 
     public static enum Action {
-        SHOW, YES, NO;
+        SHOW, YES, NO
     }
 
     public BreakfastNotifier() {
         super(NAME);
+        Log.i(BananaMuffin.TAG, "Breakfast Notifier created.");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        switch (Action.valueOf(intent.getAction())) {
-            case SHOW: show(); break;
-            case YES: yes(); break;
-            case NO: no(); break;
+        final String action = intent.getAction();
+        Log.i(BananaMuffin.TAG, "Handling action: " + action + " for Alarm intent: " + intent);
+        if (action != null) {
+            switch (Action.valueOf(action)) {
+                case SHOW:
+                    show();
+                    break;
+                case YES:
+                    yes();
+                    break;
+                case NO:
+                    no();
+                    break;
+                default:
+                    Log.d(BananaMuffin.TAG, "Action not supported " + action);
+            }
         }
     }
 
@@ -43,9 +56,9 @@ public class BreakfastNotifier extends IntentService {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.notification)
                 .setContentTitle("Colazione?")
-                .setContentText("Hello World!")
-                .addAction(0, "Si", pendingYes)
-                .addAction(0, "No", pendingNo);
+                .setContentText(getText())
+                .addAction(0, getString(R.string.yes), pendingYes)
+                .addAction(0, getString(R.string.no), pendingNo);
 
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -61,5 +74,13 @@ public class BreakfastNotifier extends IntentService {
     private void no() {
         // Todo
     }
+
+    private String getText() {
+        return list[0];
+    }
+
+    private String[] list = new String[]{
+        "Tanto va la gatta al largo che ci lascia il Muffin-o"
+    };
 
 }
