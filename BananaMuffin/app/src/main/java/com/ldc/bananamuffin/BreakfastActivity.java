@@ -27,10 +27,6 @@ public class BreakfastActivity extends Activity {
         if (state != null) {
             activeReminder = state.getBoolean(ACTIVE_REMINDER, false);
         }
-        // Start Notifier
-        Log.i(BananaMuffin.TAG, "Start notifier");
-        Intent startNotifier = new Intent(this, BreakfastNotifier.class);
-        startService(startNotifier);
         // Start Reminder
         final BreakfastReminder reminder = new BreakfastReminder(this);
         Log.i(BananaMuffin.TAG, "Start notifier");
@@ -44,7 +40,7 @@ public class BreakfastActivity extends Activity {
                 if (isChecked) {
                     Log.i(BananaMuffin.TAG, "Switch on");
                     activeReminder = true;
-                    reminder.activate();
+                    reminder.activateShortAlarm();
                 } else {
                     Log.i(BananaMuffin.TAG, "Switch off");
                     activeReminder = false;
@@ -60,7 +56,7 @@ public class BreakfastActivity extends Activity {
                 Log.i(BananaMuffin.TAG, "Click the notifier");
                 Intent show = new Intent(BreakfastActivity.this, BreakfastNotifier.class);
                 show.setAction(BreakfastNotifier.Action.SHOW.toString());
-                startService(show);
+                sendBroadcast(show);
             }
         });
     }
