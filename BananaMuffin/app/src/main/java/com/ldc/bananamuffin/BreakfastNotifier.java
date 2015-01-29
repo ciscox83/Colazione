@@ -10,6 +10,11 @@ import android.util.Log;
 
 public class BreakfastNotifier extends BroadcastReceiver {
 
+    private static final int NOTIFICATION_ID = 1;
+    public static final String PACKAGE_NAME = "com.whatsapp";
+    public static final String WHATSAPP_PACKAGE_NAME = PACKAGE_NAME;
+    public static final String TYPE_TEXT_PLAIN = "text/plain";
+
     public static enum Action {
         SHOW, YES, NO
     }
@@ -28,10 +33,10 @@ public class BreakfastNotifier extends BroadcastReceiver {
                     show(context);
                     break;
                 case YES:
-                    yes();
+                    yes(context, "Yes");
                     break;
                 case NO:
-                    no();
+                    no(context);
                     break;
                 default:
                     Log.d(BananaMuffin.TAG, "Action not supported " + action);
@@ -57,19 +62,28 @@ public class BreakfastNotifier extends BroadcastReceiver {
                 .addAction(0, context.getString(R.string.yes), pendingYes)
                 .addAction(0, context.getString(R.string.no), pendingNo);
 
-        NotificationManager mNotificationManager =
+        NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         // mId allows you to update the notification later on.
-        mNotificationManager.notify(1, mBuilder.build());
+        notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 
-    private void yes() {
-        // Todo
+    private void yes(Context context, String message) {
+        Log.i(BananaMuffin.TAG, "Press Yes");
+        Intent send = new Intent();
+        send.setAction(Intent.ACTION_SEND);
+        send.putExtra(Intent.EXTRA_TEXT, message);
+        send.setType(TYPE_TEXT_PLAIN);
+        send.setPackage(WHATSAPP_PACKAGE_NAME); // TODO Check if Whatsapp exists
+        context.startActivity(send);
     }
 
-    private void no() {
-        // Todo
+    private void no(Context context) {
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Log.i(BananaMuffin.TAG, "Press No");
+        notificationManager.cancel(NOTIFICATION_ID);
     }
 
 }

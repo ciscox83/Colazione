@@ -6,7 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="switch_text">Breakfast Reminder</string>
     <string name="notify">Notify</string>
-    <string name="yes">Yes</string>
+    <string name="yes">Si</string>
     <string name="no">No</string>
 
 </resources>
