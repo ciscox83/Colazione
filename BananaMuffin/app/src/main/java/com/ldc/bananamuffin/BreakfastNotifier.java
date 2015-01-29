@@ -15,7 +15,6 @@ public class BreakfastNotifier extends BroadcastReceiver {
     public static final String PACKAGE_NAME = "com.whatsapp";
     public static final String WHATSAPP_PACKAGE_NAME = PACKAGE_NAME;
     public static final String TYPE_TEXT_PLAIN = "text/plain";
-    public static final String CHOOSER_TEXT = "Send message using: ";
 
     public static enum Action {
         SHOW, YES, NO
@@ -74,7 +73,8 @@ public class BreakfastNotifier extends BroadcastReceiver {
     private void yes(Context context, String message) {
         Log.i(BananaMuffin.TAG, "Press Yes");
         // Create an intent to send a message via Whatsapp
-        Intent send = new Intent(Intent.ACTION_SEND);
+        Intent send = new Intent();
+        send.setAction(Intent.ACTION_SEND);
         send.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         send.putExtra(Intent.EXTRA_TEXT, message);
         send.setType(TYPE_TEXT_PLAIN);
