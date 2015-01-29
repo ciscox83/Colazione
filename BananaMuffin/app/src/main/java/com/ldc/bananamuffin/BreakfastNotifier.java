@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -14,6 +15,7 @@ public class BreakfastNotifier extends BroadcastReceiver {
     public static final String PACKAGE_NAME = "com.whatsapp";
     public static final String WHATSAPP_PACKAGE_NAME = PACKAGE_NAME;
     public static final String TYPE_TEXT_PLAIN = "text/plain";
+    public static final String CHOOSER_TEXT = "Send message using: ";
 
     public static enum Action {
         SHOW, YES, NO
@@ -49,11 +51,11 @@ public class BreakfastNotifier extends BroadcastReceiver {
 
         Intent yesIntent = new Intent(context, BreakfastNotifier.class);
         yesIntent.setAction(Action.YES.name());
-        PendingIntent pendingYes = PendingIntent.getService(context, 0, yesIntent, 0);
+        PendingIntent pendingYes = PendingIntent.getBroadcast(context, 0, yesIntent, 0);
 
         Intent noIntent = new Intent(context, BreakfastNotifier.class);
         noIntent.setAction(Action.NO.name());
-        PendingIntent pendingNo = PendingIntent.getService(context, 0, noIntent, 0);
+        PendingIntent pendingNo = PendingIntent.getBroadcast(context, 0, noIntent, 0);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.notification)
@@ -71,8 +73,9 @@ public class BreakfastNotifier extends BroadcastReceiver {
 
     private void yes(Context context, String message) {
         Log.i(BananaMuffin.TAG, "Press Yes");
-        Intent send = new Intent();
-        send.setAction(Intent.ACTION_SEND);
+        // Create an intent to send a message via Whatsapp
+        Intent send = new Intent(Intent.ACTION_SEND);
+        send.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         send.putExtra(Intent.EXTRA_TEXT, message);
         send.setType(TYPE_TEXT_PLAIN);
         send.setPackage(WHATSAPP_PACKAGE_NAME); // TODO Check if Whatsapp exists
@@ -80,9 +83,9 @@ public class BreakfastNotifier extends BroadcastReceiver {
     }
 
     private void no(Context context) {
+        Log.i(BananaMuffin.TAG, "Press No");
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Log.i(BananaMuffin.TAG, "Press No");
         notificationManager.cancel(NOTIFICATION_ID);
     }
 
