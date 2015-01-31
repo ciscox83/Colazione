@@ -8,5 +8,10 @@
     <string name="notify">Notify</string>
     <string name="yes">Si</string>
     <string name="no">No</string>
+    <string-array name="messages">
+        <item>Tanto va la gatta al largo, che ci lascia il Muffin-o</item>
+        <item>Rosso di sera, Muffin si spera</item>
+        <item>Meglio un Pain au Chocolat, domani a colazione!</item>
+    </string-array>
 
 </resources>

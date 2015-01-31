@@ -5,9 +5,10 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import java.util.Random;
 
 public class BreakfastNotifier extends BroadcastReceiver {
 
@@ -34,7 +35,7 @@ public class BreakfastNotifier extends BroadcastReceiver {
                     show(context);
                     break;
                 case YES:
-                    yes(context, "Yes");
+                    yes(context, intent.getStringExtra(MESSAGE));
                     break;
                 case NO:
                     no(context);
@@ -45,21 +46,27 @@ public class BreakfastNotifier extends BroadcastReceiver {
         }
     }
 
+    public final static String MESSAGE = "message";
+
     private void show(Context context) {
         Log.i(BananaMuffin.TAG, "Show notification");
 
+        String message = getMessage(context);
+
         Intent yesIntent = new Intent(context, BreakfastNotifier.class);
         yesIntent.setAction(Action.YES.name());
+        yesIntent.putExtra(MESSAGE, message);
         PendingIntent pendingYes = PendingIntent.getBroadcast(context, 0, yesIntent, 0);
 
         Intent noIntent = new Intent(context, BreakfastNotifier.class);
         noIntent.setAction(Action.NO.name());
         PendingIntent pendingNo = PendingIntent.getBroadcast(context, 0, noIntent, 0);
 
+        String[] split = message.split(",");
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.notification)
-                .setContentTitle("Tanto va la gatta al largo ...")
-                .setContentText("... che ci lascia il Muffin-o")
+                .setContentTitle(split[0] + " ...")
+                .setContentText("..." + split[1])
                 .addAction(0, context.getString(R.string.yes), pendingYes)
                 .addAction(0, context.getString(R.string.no), pendingNo);
 
@@ -67,11 +74,22 @@ public class BreakfastNotifier extends BroadcastReceiver {
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         // mId allows you to update the notification later on.
+        notificationManager.notify();
         notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+    }
+
+    private String getMessage(Context context) {
+        String[] messages = context.getResources().getStringArray(R.array.messages);
+        Random random = new Random();
+        return messages[random.nextInt(messages.length)];
     }
 
     private void yes(Context context, String message) {
         Log.i(BananaMuffin.TAG, "Press Yes");
+        // Close notification
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(NOTIFICATION_ID);
         // Create an intent to send a message via Whatsapp
         Intent send = new Intent();
         send.setAction(Intent.ACTION_SEND);
