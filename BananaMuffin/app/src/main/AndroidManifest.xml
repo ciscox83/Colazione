@@ -28,11 +28,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SendMessageActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND"/>
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>
