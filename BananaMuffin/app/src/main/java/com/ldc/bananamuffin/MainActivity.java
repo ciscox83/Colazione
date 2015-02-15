@@ -11,7 +11,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 
-public class BreakfastActivity extends Activity {
+public class MainActivity extends Activity {
 
     private final static String ACTIVE_REMINDER = "activeReminder";
 
@@ -54,7 +54,7 @@ public class BreakfastActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Log.i(BananaMuffin.TAG, "Click the notifier");
-                Intent show = new Intent(BreakfastActivity.this, BreakfastNotifier.class);
+                Intent show = new Intent(MainActivity.this, BreakfastNotifier.class);
                 show.setAction(BreakfastNotifier.Action.SHOW.toString());
                 sendBroadcast(show);
             }
