@@ -75,7 +75,6 @@ public class BreakfastNotifier extends BroadcastReceiver {
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         // mId allows you to update the notification later on.
-        notificationManager.notify();
         notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 

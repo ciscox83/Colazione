@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.Toast;
 
 
 public class BreakfastActivity extends Activity {
@@ -78,7 +79,8 @@ public class BreakfastActivity extends Activity {
                 SharedPreferences sharedPref = getPreferences();
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString(getString(R.string.custom_messages), text);
-                editor.apply();
+                editor.commit();
+                Toast.makeText(BreakfastActivity.this, R.string.custom_messages_saved, Toast.LENGTH_SHORT).show();
             }
         });
     }

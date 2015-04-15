@@ -35,6 +35,6 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:text="@string/save" />
+        android:text="@string/custom_messages_save" />
 
 </LinearLayout>
