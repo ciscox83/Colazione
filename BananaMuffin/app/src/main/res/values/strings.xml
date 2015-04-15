@@ -8,6 +8,10 @@
     <string name="notify">Notify</string>
     <string name="yes">Si</string>
     <string name="no">No</string>
+    <string name="messages">Messages (new line is a new message)</string>
+    <string name="save">Save</string>
+    <string name="preferences">com.ldc.bananamuffin.PREFERENCES</string>
+    <string name="custom_messages">custom_messages</string>
     <string-array name="messages">
         <item>Tanto va la gatta al largo, che ci lascia il Muffin-o</item>
         <item>Rosso di sera, Muffin si spera</item>

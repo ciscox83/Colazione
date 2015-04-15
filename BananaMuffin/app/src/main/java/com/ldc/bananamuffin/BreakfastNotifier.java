@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -17,7 +18,7 @@ public class BreakfastNotifier extends BroadcastReceiver {
     public static final String WHATSAPP_PACKAGE_NAME = PACKAGE_NAME;
     public static final String TYPE_TEXT_PLAIN = "text/plain";
 
-    public static enum Action {
+    public enum Action {
         SHOW, YES, NO
     }
 
@@ -79,9 +80,21 @@ public class BreakfastNotifier extends BroadcastReceiver {
     }
 
     private String getMessage(Context context) {
-        String[] messages = context.getResources().getStringArray(R.array.messages);
-        Random random = new Random();
-        return messages[random.nextInt(messages.length)];
+        SharedPreferences preferences = getPreferences(context);
+        String customMessages = preferences.getString(context.getString(R.string.custom_messages), "");
+        if (customMessages.isEmpty()) {
+            String[] messages = context.getResources().getStringArray(R.array.messages);
+            Random random = new Random();
+            return messages[random.nextInt(messages.length)];
+        } else {
+            String[] messages = customMessages.split("\n");
+            Random random = new Random();
+            return messages[random.nextInt(messages.length)];
+        }
+    }
+
+    private SharedPreferences getPreferences(Context context) {
+        return context.getSharedPreferences(context.getString(R.string.preferences), Context.MODE_PRIVATE);
     }
 
     private void yes(Context context, String message) {
