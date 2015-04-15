@@ -14,12 +14,13 @@ import java.util.Random;
 public class BreakfastNotifier extends BroadcastReceiver {
 
     private static final int NOTIFICATION_ID = 1;
-    public static final String PACKAGE_NAME = "com.whatsapp";
-    public static final String WHATSAPP_PACKAGE_NAME = PACKAGE_NAME;
-    public static final String TYPE_TEXT_PLAIN = "text/plain";
+    private static final String WHATSAPP_PACKAGE_NAME = "com.whatsapp";
+    private static final String TYPE_TEXT_PLAIN = "text/plain";
+    private static final int TITLE = 0;
+    private static final int BODY = 1;
 
     public enum Action {
-        SHOW, YES, NO
+        SHOW, NO
     }
 
     public BreakfastNotifier() {
@@ -35,50 +36,62 @@ public class BreakfastNotifier extends BroadcastReceiver {
                 case SHOW:
                     show(context);
                     break;
-                case YES:
-                    yes(context, intent.getStringExtra(MESSAGE));
-                    break;
                 case NO:
                     no(context);
                     break;
                 default:
-                    Log.d(BananaMuffin.TAG, "Action not supported " + action);
+                    Log.e(BananaMuffin.TAG, "Action not supported " + action);
             }
         }
     }
 
-    public final static String MESSAGE = "message";
-
     private void show(Context context) {
         Log.i(BananaMuffin.TAG, "Show notification");
 
-        String message = getMessage(context);
+        String message = getRandomMessage(context);
+        String[] messageParts = message.split(",");
 
-        Intent yesIntent = new Intent(context, BreakfastNotifier.class);
-        yesIntent.setAction(Action.YES.name());
-        yesIntent.putExtra(MESSAGE, message);
-        PendingIntent pendingYes = PendingIntent.getBroadcast(context, 0, yesIntent, 0);
+        Intent sendMessage = buildIntendToSendWhatsappMessage(message);
+        PendingIntent pendingYes = PendingIntent.getActivity(context, 0, sendMessage,
+                PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Intent noIntent = new Intent(context, BreakfastNotifier.class);
-        noIntent.setAction(Action.NO.name());
-        PendingIntent pendingNo = PendingIntent.getBroadcast(context, 0, noIntent, 0);
+        Intent cancel = buildIntentToCloseNotification(context);
+        PendingIntent pendingNo = PendingIntent.getBroadcast(context, 0, cancel, 0);
 
-        String[] split = message.split(",");
+        showChoiceNotification(context, messageParts, pendingYes, pendingNo);
+    }
+
+    private Intent buildIntentToCloseNotification(Context context) {
+        Intent cancel = new Intent(context, BreakfastNotifier.class);
+        cancel.setAction(Action.NO.name());
+        return cancel;
+    }
+
+    private Intent buildIntendToSendWhatsappMessage(String message) {
+        Intent sendMessage = new Intent();
+        sendMessage.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        sendMessage.setAction(Intent.ACTION_SEND); // TODO Use SENDTO instead?
+        sendMessage.putExtra(Intent.EXTRA_TEXT, message);
+        sendMessage.setType(TYPE_TEXT_PLAIN);
+        sendMessage.setPackage(WHATSAPP_PACKAGE_NAME); // TODO Check if Whatsapp exists
+        return sendMessage;
+    }
+
+    private void showChoiceNotification(Context context, String[] messageParts,
+                                        PendingIntent pendingYes, PendingIntent pendingNo) {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+                .setAutoCancel(true)
                 .setSmallIcon(R.drawable.notification)
-                .setContentTitle(split[0] + " ...")
-                .setContentText("..." + split[1])
+                .setContentTitle(messageParts[TITLE] + " ...")
+                .setContentText("..." + messageParts[BODY])
                 .addAction(0, context.getString(R.string.yes), pendingYes)
                 .addAction(0, context.getString(R.string.no), pendingNo);
 
-        NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // mId allows you to update the notification later on.
+        NotificationManager notificationManager = getNotificationManager(context);
         notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 
-    private String getMessage(Context context) {
+    private String getRandomMessage(Context context) {
         SharedPreferences preferences = getPreferences(context);
         String customMessages = preferences.getString(context.getString(R.string.custom_messages), "");
         if (customMessages.isEmpty()) {
@@ -96,27 +109,14 @@ public class BreakfastNotifier extends BroadcastReceiver {
         return context.getSharedPreferences(context.getString(R.string.preferences), Context.MODE_PRIVATE);
     }
 
-    private void yes(Context context, String message) {
-        Log.i(BananaMuffin.TAG, "Press Yes");
-        // Close notification
-        NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(NOTIFICATION_ID);
-        // Create an intent to send a message via Whatsapp
-        Intent send = new Intent();
-        send.setAction(Intent.ACTION_SEND);
-        send.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        send.putExtra(Intent.EXTRA_TEXT, message);
-        send.setType(TYPE_TEXT_PLAIN);
-        send.setPackage(WHATSAPP_PACKAGE_NAME); // TODO Check if Whatsapp exists
-        context.startActivity(send);
-    }
-
     private void no(Context context) {
         Log.i(BananaMuffin.TAG, "Press No");
-        NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = getNotificationManager(context);
         notificationManager.cancel(NOTIFICATION_ID);
+    }
+
+    private NotificationManager getNotificationManager(Context context) {
+        return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
 }
