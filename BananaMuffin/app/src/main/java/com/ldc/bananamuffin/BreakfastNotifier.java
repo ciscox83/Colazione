@@ -1,11 +1,13 @@
 package com.ldc.bananamuffin;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -77,18 +79,37 @@ public class BreakfastNotifier extends BroadcastReceiver {
         return sendMessage;
     }
 
+    private final static long[] VIBRATION_MMM_M_M = new long[]{300, 300, 200, 200, 200, 200};
+
     private void showChoiceNotification(Context context, String[] messageParts,
                                         PendingIntent pendingYes, PendingIntent pendingNo) {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setAutoCancel(true)
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setCategory(Notification.CATEGORY_MESSAGE)
                 .setSmallIcon(R.drawable.notification)
                 .setContentTitle(messageParts[TITLE] + " ...")
                 .setContentText("..." + messageParts[BODY])
+                .setLights(Color.WHITE, 300, 300)
+                .setVibrate(VIBRATION_MMM_M_M)
+                .setStyle(getBigMessage(context, messageParts))
+                .setTicker(messageParts[TITLE] + messageParts[BODY])
                 .addAction(0, context.getString(R.string.yes), pendingYes)
                 .addAction(0, context.getString(R.string.no), pendingNo);
 
         NotificationManager notificationManager = getNotificationManager(context);
-        notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+        notificationManager.notify(NOTIFICATION_ID, builder.build());
+    }
+
+    private NotificationCompat.InboxStyle getBigMessage(Context context, String[] messageParts) {
+        NotificationCompat.InboxStyle inboxStyle =
+                new NotificationCompat.InboxStyle();
+        String[] events = new String[] {messageParts[TITLE], messageParts[BODY]};
+        inboxStyle.setBigContentTitle(context.getString(R.string.notification_title));
+        for (String event : events) {
+            inboxStyle.addLine(event);
+        }
+        return inboxStyle;
     }
 
     private String getRandomMessage(Context context) {
