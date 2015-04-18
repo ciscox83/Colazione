@@ -10,6 +10,7 @@
     <string name="no">No</string>
     <string name="messages">Messages (new line is a new message)</string>
     <string name="preferences">com.ldc.bananamuffin.PREFERENCES</string>
+    <string name="notification_title">Breakfast</string>
     <string name="custom_messages">custom_messages</string>
     <string name="custom_messages_save">Save</string>
     <string name="custom_messages_saved">The messages have been saved.</string>
