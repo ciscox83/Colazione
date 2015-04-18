@@ -1,0 +1,1 @@
+appcfg.py -A banana-muffin --oauth2 update BananaMuffinWs
