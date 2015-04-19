@@ -21,6 +21,10 @@ public class BreakfastActivity extends Activity {
 
     private boolean activeReminder = false;
 
+    // http://examples.javacodegeeks.com/android/core/provider/android-contacts-example/
+
+    // http://androidexample.com/Show_Phone_Contacts_In_AutoComplete_Suggestions_-_Android_Example/index.php?view=article_discription&aid=106&aaid=128
+
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
