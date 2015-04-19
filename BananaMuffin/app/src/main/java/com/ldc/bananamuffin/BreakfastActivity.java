@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -17,13 +20,14 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Iterator;
+import java.util.Set;
 
 
 public class BreakfastActivity extends Activity {
@@ -68,6 +72,15 @@ public class BreakfastActivity extends Activity {
                 }
             }
         });
+        // Select contact
+        Button select = (Button) findViewById(R.id.select);
+        select.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i(BananaMuffin.TAG, "Click on select contact button");
+                doLaunchContactPicker(view);
+            }
+        });
         // Notify breakfast directly
         Button notifier = (Button) findViewById(R.id.notifier);
         notifier.setOnClickListener(new View.OnClickListener() {
@@ -99,7 +112,7 @@ public class BreakfastActivity extends Activity {
                 SharedPreferences sharedPref = getPreferences();
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString(getString(R.string.custom_messages), text);
-                editor.commit();
+                editor.apply();
                 Toast.makeText(BreakfastActivity.this, R.string.custom_messages_saved, Toast.LENGTH_SHORT).show();
             }
         });
@@ -113,9 +126,58 @@ public class BreakfastActivity extends Activity {
         return getSharedPreferences(getString(R.string.preferences), Context.MODE_PRIVATE);
     }
 
+    private static final int CONTACT_PICKER_RESULT = 1001;
+
+    private void doLaunchContactPicker(View view) {
+        Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(contactPickerIntent, CONTACT_PICKER_RESULT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case CONTACT_PICKER_RESULT :
+                    readContact(data);
+                    break;
+            }
+        } else {
+            Log.i(BananaMuffin.TAG, "Activity result is not ok");
+        }
+    }
+
+    private void readContact(Intent data) {
+        Uri result = data.getData();
+        Log.i(BananaMuffin.TAG, "Got a result: " + result.toString());
+        String contactId = result.getLastPathSegment();
+        String name = getContactCursor(contactId);
+        if (name != null) {
+            Log.i(BananaMuffin.TAG, "Found contact " + name);
+            getContactText().setText(name);
+        }
+    }
+
+    private final static Uri CONTENT_URI = ContactsContract.Contacts.CONTENT_URI;
+    private final static String ID = ContactsContract.Contacts._ID;
+    private final static String DISPLAY_NAME = ContactsContract.Contacts.DISPLAY_NAME;
+
+    private String getContactCursor(String contactId) {
+        String selection = ID + " = ?";
+        String[] selectionArgs = new String[] { contactId };
+        Cursor cursor = getContentResolver().query(CONTENT_URI, null, selection, selectionArgs, null);
+        if (cursor.moveToFirst()) {
+            return cursor.getString(cursor.getColumnIndex(DISPLAY_NAME));
+        } else {
+            return null;
+        }
+    }
+
+    private EditText getContactText() {
+        return (EditText) findViewById(R.id.contact);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_boot, menu);
         return true;
     }

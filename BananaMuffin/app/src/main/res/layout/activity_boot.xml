@@ -14,11 +14,27 @@
         android:text="@string/switch_text"
         android:id="@+id/activator" />
 
-    <Button
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/notify"
-        android:id="@+id/notifier" />
+        android:layout_marginTop="@dimen/contact_top_margin">
+
+        <EditText
+            android:layout_height="fill_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:hint="@string/contact"
+            android:id="@+id/contact" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="@string/select"
+            android:id="@+id/select" />
+
+    </LinearLayout>
 
     <EditText
         android:layout_width="match_parent"
@@ -30,11 +46,25 @@
         android:hint="@string/messages"
         android:layout_marginTop="@dimen/messages_top_margin"/>
 
-    <Button
-        android:id="@+id/save"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:text="@string/custom_messages_save" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="@string/notify"
+            android:id="@+id/notifier" />
+
+        <Button
+            android:id="@+id/save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="@string/custom_messages_save" />
+    </LinearLayout>
 
 </LinearLayout>
