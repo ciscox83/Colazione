@@ -26,8 +26,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Iterator;
-import java.util.Set;
 
 
 public class BreakfastActivity extends Activity {
@@ -78,7 +76,7 @@ public class BreakfastActivity extends Activity {
             @Override
             public void onClick(View view) {
                 Log.i(BananaMuffin.TAG, "Click on select contact button");
-                doLaunchContactPicker(view);
+                doLaunchContactPicker();
             }
         });
         // Notify breakfast directly
@@ -128,7 +126,7 @@ public class BreakfastActivity extends Activity {
 
     private static final int CONTACT_PICKER_RESULT = 1001;
 
-    private void doLaunchContactPicker(View view) {
+    private void doLaunchContactPicker() {
         Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
         startActivityForResult(contactPickerIntent, CONTACT_PICKER_RESULT);
     }
@@ -183,6 +181,7 @@ public class BreakfastActivity extends Activity {
     }
 
     @Override
+
     protected void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
         state.putBoolean(ACTIVE_REMINDER, activeReminder);
